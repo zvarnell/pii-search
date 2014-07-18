@@ -19,8 +19,7 @@ apt-get install libmagic-dev
 Both
 
 ```
-gem install yomu
-gem install ruby-filemagic
+bundle install
 ```
 
 ### Usage
