@@ -10,7 +10,7 @@ def findpii(f)
     f.each_line do |line|
                 
         if !(match_data = line.match($cc)).nil?
-            match_data = match_data.to_s #.gsub(/[^0-9A-Za-z]/, '')
+            match_data = match_data.to_s
             puts "\r[!] CC# found in " + $file + ": " + match_data + "\n\n" if luhnother(match_data) == true
         end
         if !(match_data = line.match($ssn)).nil?
@@ -41,7 +41,7 @@ $ssn = /\b(?!000|666|\A9)(?:[0-6][0-9]{2}|7(?:[0-6][0-9]|7[0-2]))[^\d]?(?!00)[0-
 
 # Exit if no args
 if ARGV.empty?
-    puts "Usage: ruby pii.rb /path/to/search/\n\n"  
+    puts "Usage: ruby " + $0 + " /path/to/search/\n\n"  
     exit
 end
 
