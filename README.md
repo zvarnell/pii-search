@@ -30,7 +30,9 @@ ruby pii.rb /path/to/search/
 
 ### Tested on
 Mac OS X - Ruby 1.9.3
+
 Debian 7 - Ruby 1.9.3
+
 Ubuntu 12.04.4 LTS - Ruby 1.9.3
 
 ### Known Bugs / Issues
