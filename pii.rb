@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # PII Search tool
 # Zach Varnell
 
