@@ -1,0 +1,14 @@
+{
+  "ColorHex": {
+    "rule": "[cC][oO][lL][oO][rR][:=]#[a-f0-9A-F]{6}",
+    "description": [
+      "color='#cccc00' or color:#CCCC00"
+    ]
+  },
+  "ESMTP_ID": {
+    "rule": "with ESMTP id [\d]+",
+    "description": [
+      "with ESMTP id"
+    ]
+  }
+}
