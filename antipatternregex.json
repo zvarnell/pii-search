@@ -1,6 +1,6 @@
 {
   "ColorHex": {
-    "rule": "[cC][oO][lL][oO][rR][:=]#[a-f0-9A-F]{6}",
+    "rule": "color=#[a-fA-F\d]{6}",
     "description": [
       "color='#cccc00' or color:#CCCC00"
     ]

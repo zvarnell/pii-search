@@ -24,7 +24,7 @@ def findpii(f,fname)
 	            apreg = "/" + ap[1]['rule'].gsub(/\^/,'').gsub(/\$/,'') + "/"
                     # if anti-pattern doesn't match, continue printing data
                     #puts "[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n"
-                    if !(line.scrub('*').match(apreg)).nil? 
+                    if (line.scrub('*').match(apreg)).nil? 
                         fantipatternmatch =+ 1
                         fantipatternmatchlog.write("[!] DL (" + item[0] + ") found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n")
                         puts "[!] DL (" + item[0] + ") found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n"
@@ -43,7 +43,7 @@ def findpii(f,fname)
                 apreg = "/" + ap[1]['rule'].gsub(/\^/,'').gsub(/\$/,'') + "/"
                 #puts "[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n"
                 # if anti-pattern doesn't match, continue printing data
-                if !(line.scrub('*').match(apreg)).nil? 
+                if (line.scrub('*').match(apreg)).nil? 
                     fantipatternmatch =+ 1
                     puts "\r[!] CC# found in " + $file + ": " + match_data + "\n\n" if luhnother(match_data) == true
 
@@ -65,7 +65,7 @@ def findpii(f,fname)
                 fantipatternmatch =+ 1
                 fantipatternmatchlog.write("[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n")
                 # if anti-pattern doesn't match, continue printing data
-                if !(line.scrub('*').match(apreg)).nil? 
+                if (line.scrub('*').match(apreg)).nil? 
                     fantipatternmatchlog.write("[!] SSN found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n")
                     puts "[!] SSN found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n"
                 end
