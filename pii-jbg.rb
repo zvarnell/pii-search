@@ -6,15 +6,18 @@ require 'yomu'
 require 'ruby-filemagic'
 
 def findpii(f,fname)
+    fpatternmatchlog = open("pii-pattern-matches.log","a")
+    fantipatternmatchlog = open("pii-antipattern-matches.log","a")
     # Read each line of file
     linecount = 1
     f.each_line do |line|
-        #puts "[Info] Filename: " + fname + " Line Number: " + linecount.to_s + "\n"
         # Driver's License Patterns from dl_regex.json
 	@dlpatterns.each do |item|
+            fpatternmatch =+ 1
 	    dlreg = "/" + item[1]['rule'].gsub(/\^/,'').gsub(/\$/,'') + "/"
-	    #puts "[Info] DL -> State: " + item[0] + " and Pattern: " + dlreg + "\n"
             if !(match_data = line.scrub('*').match(dlreg)).nil?
+                match_data = match_data.to_s
+	        fpatternmatchlog.write("[!] DL (" + item[0] + ") found in " + $file + " on line " + linecount.to_s + ": " + match_data.to_s + "\n")
                 # we have a match.  now we need to filter out antipatterns
                 # loop through anti-patterns, searching for matches
                 @apatterns.each do |ap|
@@ -22,7 +25,8 @@ def findpii(f,fname)
                     # if anti-pattern doesn't match, continue printing data
                     #puts "[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n"
                     if !(line.scrub('*').match(apreg)).nil? 
-                        match_data = match_data.to_s
+                        fantipatternmatch =+ 1
+                        fantipatternmatchlog.write("[!] DL (" + item[0] + ") found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n")
                         puts "[!] DL (" + item[0] + ") found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n"
                     end
                 end
@@ -32,32 +36,45 @@ def findpii(f,fname)
         if !(match_data = line.scrub('*').match($cc)).nil?
             # we have a match.  now we need to filter out antipatterns
             # loop through anti-patterns, searching for matches
+            match_data = match_data.to_s
+            fpatternmatch =+ 1
+            fpatternmatchlog.write("[!] CC# found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n") if luhnother(match_data) == true
             @apatterns.each do |ap|
                 apreg = "/" + ap[1]['rule'].gsub(/\^/,'').gsub(/\$/,'') + "/"
                 #puts "[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n"
                 # if anti-pattern doesn't match, continue printing data
                 if !(line.scrub('*').match(apreg)).nil? 
-                    match_data = match_data.to_s
+                    fantipatternmatch =+ 1
+                    puts "\r[!] CC# found in " + $file + ": " + match_data + "\n\n" if luhnother(match_data) == true
+
+                    fantipatternmatchlog.write("[!] CC# found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n") if luhnother(match_data) == true
                     puts "[!] CC# found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n" if luhnother(match_data) == true
                 end
             end
         end
 	#puts "[Info] SSN Pattern: " + $ssn.to_s + "\n"
         if !(match_data = line.scrub('*').match($ssn)).nil?
+            match_data = match_data.to_s
             # we have a match.  now we need to filter out antipatterns
             # loop through anti-patterns, searching for matches
+            fpatternmatch =+ 1
+            fpatternmatchlog.write("[!] SSN found in " + $file + " on line " + linecount.to_s + ": " + match_data.to_s + "\n")
             @apatterns.each do |ap|
                 apreg = "/" + ap[1]['rule'].gsub(/\^/,'').gsub(/\$/,'') + "/"
                 #puts "[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n"
+                fantipatternmatch =+ 1
+                fantipatternmatchlog.write("[Info] AntiPattern: " + ap[0] + " and Pattern: " + apreg + "\n")
                 # if anti-pattern doesn't match, continue printing data
                 if !(line.scrub('*').match(apreg)).nil? 
-                    match_data = match_data.to_s
+                    fantipatternmatchlog.write("[!] SSN found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n")
                     puts "[!] SSN found in " + $file + " on line " + linecount.to_s + ": " + match_data + "\n"
                 end
             end
         end
 	linecount += 1
     end
+    fpatternmatchlog.close
+    fantipatternmatchlog.close
 end
 
 # Function to validate credit card numbers
@@ -120,6 +137,8 @@ filelog = open("pii-file.log","a")
 fcount = 0
 fskip = 0
 fcheck = 0
+fpatternmatch = 0
+fantipatternmatch = 0
 # Find all files
 Dir.glob(path + "**/*").each do |file|
     $file = file
@@ -153,5 +172,7 @@ end
 puts "Files Counted: " + fcount.to_s + "\n"
 puts "Files Checked: " + fcheck.to_s + "\n"
 puts "Files Skipped: " + (fcount - fcheck).to_s + "\n"
+puts "Files Initially Matched: " + fpatternmatch.to_s + "\n"
+puts "Files Matched after Antipatterns: " + fantipatternmatch.to_s + "\n"
 puts "\r".ljust(80)
 filelog.close
